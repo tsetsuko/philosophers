@@ -29,7 +29,7 @@ typedef struct s_philo
 typedef struct s_monitor
 {
 	int	num_of_philos;
-	int	eat;
+	int	time_of_eating;
 	int	sleep;
 	int	die;
 }	t_monitor;
