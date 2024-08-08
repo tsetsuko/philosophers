@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 14:18:29 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/07/28 20:07:10 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/08/07 17:26:42 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,27 @@ void	error(char *message)
 {
 	printf(RED"error - ");
 	printf(RST"%s", message);
-	exit (EXIT_FAILURE);
+}
+
+static int	num_input(char **argv)
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	while (argv[i])
+	{
+		j = 0;
+		while (argv[i][j])
+		{
+			if (!ft_isdigit(argv[i][j]))
+				return (0);
+			else
+				j++;
+		}
+		i++;
+	}
+	return (1);
 }
 
 static int	ft_isspace(char c)
@@ -26,7 +46,7 @@ static int	ft_isspace(char c)
 	return (0);
 }
 
-int	ft_atoi(const char *str)
+long	ft_atol(const char *str)
 {
 	int	result;
 	int	sign;
@@ -57,22 +77,27 @@ int	ft_isdigit(int c)
 	return (0);
 }
 
-int	check_args(char **argv)
+int	check_args(char **argv, t_monitor *m)
 {
-	int	i;
-	int	j;
-
-	i = 1;
-	while (argv[i])
+	if (!num_input)
 	{
-		j = 0;
-		while (argv[i][j])
-		{
-			if (!ft_isdigit(argv[i][j]))
-				return (0);
-			else
-				j++;
-		}
-		i++;
+		error("enter only non-alphabetic arguments");
+		return (0);
+	}
+	m->num_of_philos = ft_atol(argv[1]);
+	m->die = ft_atol(argv[2]);
+	m->time_of_eating = ft_atol(argv[3]);
+	m->sleep = ft_atol(argv[4]);
+	if (argv[5])
+		m->meals = ft_atol(argv[5]);
+	if (m->num_of_philos <= 0 || m->time_of_eating <= 0 || m->die <= 0 || m->sleep <= 0)
+	{
+		error("enter correct values (bigger than 0)");
+		return (0);
+	}
+	if (m->num_of_philos > INT_MAX || m->time_of_eating > INT_MAX || m->die > INT_MAX || m->sleep > INT_MAX)
+	{
+		error("enter values smaller than INT_MAX only");
+		return (0);
 	}
 }

@@ -6,31 +6,75 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 22:14:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/07/28 20:21:41 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/08/08 18:22:06 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-#include "philosophers.h"
+#include "philo.h"
 
-
-init_monitor(t_monitor monitor, char **argv)
+bool	end_simulation()
 {
-	monitor.num_of_philos = ft_atoi(argv[1]);
-	monitor.time_of_eating = ft_atoi(argv[3]);
-	monitor.die = ft_atoi(argv[2]);
+
+}
+
+int	start_simulation()
+{
+
+
+}
+
+static int	init_philosophers(t_monitor monitor, t_philo **philo)
+{
+	int	i;
+	t_forks	*forks;
+
+	i = 0;
+	forks = (t_forks *)malloc(sizeof(t_forks) * monitor.num_of_philos);
+	if (!forks)
+	{
+		error("couldn't malloc() forks\n");
+		return (0);
+	}
+	while (i < monitor.num_of_philos)
+	{
+		philo_info_dump(monitor, philo[i], i, &forks);
+		fork_info_dump(&forks[i], i);
+		i++;
+	}
+	return (1);
+}
+
+static int	init_monitor(t_monitor *m, char **argv)
+{
+	m->meal_counter = false;
+	m->array_of_philos = malloc(sizeof(t_philo) * m->num_of_philos);
+	if (!m->array_of_philos)
+	{
+		error("couldn't malloc() monitor\n");
+		return (0);
+	}
 	if (argv[5])
-		monitor.meals = ft_atoi(argv[5]);
-	monitor.sleep = ft_atoi(argv[4]);
+		m->meal_counter = true;
+	return (1);
 }
 int main(int argc, char **argv)
 {
 	t_monitor monitor;
-	if (argc == 5)
+
+	if (argc == 5 || argc == 6)
 	{
-		// all args must be numbers
-		check_args();
-		init_monitor(monitor, argv);
+		// 🧾 🧾 check if the arguments are all non-alpha
+		if (!check_args(argv, &monitor))
+			return (1);
+		if (!init_monitor(&monitor, argv))
+			return (2);
+		if (!init_philosophers(monitor, monitor.array_of_philos))
+			return (3);
+		// START SIMULATION 
+		if (!start_simulation())
+			return (4);
 	}
+	return (0);
 
 }
