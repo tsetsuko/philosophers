@@ -1,27 +1,79 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   routine.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/08/09 23:10:21 by zogorzeb          #+#    #+#             */
+/*   Updated: 2024/08/09 23:22:11 by zogorzeb         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
+// this function will provide sleep for the philo but it will also check
+// if the simulation hasn't stopped in the meanwhile
+void	philo_sleep(t_monitor *m, long time)
+{
+	// long	wake_up;
+	long	now;
 
+	now = get_ms();
+	// wake_up = now + time;
+	while (time > get_ms() - now)
+	{
+		if (m->end_flag)
+		{
+			printf("end\n");
+			break ;
+		}
+		usleep(100);
+	}
+}
 
-// we also need single philo routine
+int	death_checker(t_monitor *m, t_philo *philo, long beginning)
+{
+	long	now_time;
 
-//state message
+	timestamp(beginning, &now_time);
+	if (m->die <= now_time)
+	{
+		philo->death_flag = true;
+		state_message(m->beginning, DIE, philo->index);
+		m->end_flag = true;
+		//end simulation
+	}
+	return (1);
+}
 
-void	state_message(t_state state, int index)
+void	single_philo_routine(t_monitor *m, t_philo *p)
+{
+	p->first_fork = p->forks[p->position];
+	pthread_mutex_lock(&p->forks[p->position]->lock);
+	state_message(m->beginning, F_FORK, p->index);
+	philo_sleep(m, m->die);
+	death_checker(m, p, m->beginning);
+	pthread_mutex_unlock(&p->forks[p->position]->lock);
+}
+
+void	state_message(long beginning, t_state state, int index)
 {
 	long	ms;
 
 	// ms = 
 	// create a write lock
+	timestamp(beginning, &ms);
 	if (state == SLEEP)
-		printf("%ld ms %d is sleeping\n", ms, index);
+		printf("%ldms %d is sleeping\n", ms, index);
 	else if (state == EAT)
-		printf("%ld ms %d is eating\n", ms, index);
+		printf("%ldms %d is eating\n", ms, index);
 	else if (state == DIE)
-		printf("%ld ms %d died\n", ms, index);
+		printf("%ldms %d died\n", ms, index);
 	else if (state == S_FORK)
-		printf("%ld ms %d has taken second fork\n", ms, index);
+		printf("%ldms %d has taken second fork\n", ms, index);
 	else if (state == F_FORK)
-		printf("%ld ms %d has taken first fork\n", ms, index);
+		printf("%ldms %d has taken first fork\n", ms, index);
 	else
 		error("wrong enum for the state message\n");
 }
@@ -31,43 +83,20 @@ int	routine(t_monitor *m, t_philo *p)
 	int	i;
 
 	i = 0;
-	while (!(end_simulation()))
+	p->last_meal_time = m->beginning;
+	while (m->end_flag == true)
 	{
-		if (!(p->index % 2))
-		{
-			p->first_fork = p->forks[p->position + 1];
-			pthread_mutex_lock(p->forks[(p->position + 1) % m->num_of_philos]);
-			state_message(F_FORK, p->index);
-			p->second_fork = p->forks[p->position];
-			pthread_mutex_lock(p->forks[(p->position)]);
-			state_message(S_FORK, p->index);
-		}
-		else
-		{
-			p->first_fork = p->forks[p->position];
-			pthread_mutex_lock(p->forks[(p->position)]);
-			state_message(F_FORK, p->index);
-			p->second_fork = p->forks[(p->position + 1) % m->num_of_philos];
-			pthread_mutex_lock(p->forks[(p->position + 1) % m->num_of_philos]);
-			state_message(S_FORK, p->index);
-		}
-	// EAT - lock mutex
-		if (p->first_fork && p->second_fork)
-		{
-		// update timestamp
-			state_message(EAT, p->index);
-			usleep(m->time_of_eating * 1000);
-			if (m->meal_counter == true)
-				p->meal_counter++;
-			pthread_mutex_unlock(p->forks[(p->position + 1) % m->num_of_philos]);
-			pthread_mutex_unlock(p->forks[(p->position)]);
-		}
+		philo_eat(m, p);
 	// sleep
-		state_message(SLEEP, p->index);
-		usleep(m->sleep * 1000);
+		state_message(m->beginning, SLEEP, p->index);
+		philo_sleep(m, m->sleep);
 	// think
 
+
+	// death_checker
+		death_checker(m, p, p->last_meal_time);
 	//		again!
 	// if time_to_die passed --> die flag --> monitor ends the simulation}
 	}
+	return (1);
 }

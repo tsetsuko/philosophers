@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 14:18:29 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/08/07 17:26:42 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/08/09 22:07:07 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ int	ft_isdigit(int c)
 
 int	check_args(char **argv, t_monitor *m)
 {
-	if (!num_input)
+	if (!num_input(argv))
 	{
 		error("enter only non-alphabetic arguments");
 		return (0);
@@ -100,4 +100,5 @@ int	check_args(char **argv, t_monitor *m)
 		error("enter values smaller than INT_MAX only");
 		return (0);
 	}
+	return (1);
 }
