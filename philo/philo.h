@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 15:17:15 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/08/09 23:14:16 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/08/12 14:10:53 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <stdlib.h>
 # include <limits.h>
 # include <stdbool.h>
+# include <errno.h>
 
 # define RED "\033[31m"      // Red text
 # define GREEN "\033[32m"    // Green text
@@ -32,7 +33,6 @@
 
 
 typedef struct s_monitor t_monitor;
-typedef struct	s_forks	t_forks;
 
 typedef enum	s_state
 {
@@ -46,16 +46,20 @@ typedef enum	s_state
 
 typedef struct s_philo
 {
-	pthread_t	philo_thread;
-	int			index;
-	long		last_meal_time;
-	int			meal_counter;
-	t_monitor	*monitor;
-	t_forks		**forks;
-	int			position;
-	t_forks		*first_fork;
-	t_forks		*second_fork;
-	bool		death_flag;
+	pthread_t			philo_thread;
+	pthread_t			death_checker;
+	int					index;
+	long				last_meal_time;
+	int					meal_counter;
+	t_monitor			*monitor;
+	pthread_mutex_t		*forks;
+	int					position;
+	pthread_mutex_t		*first_fork;
+	pthread_mutex_t		*second_fork;
+	pthread_mutex_t		write_message;
+	pthread_mutex_t		last_meal_lock;
+	bool				death_flag;
+	bool				eating;
 }	t_philo;
 
 typedef struct s_monitor
@@ -74,19 +78,13 @@ typedef struct s_monitor
 	long			beginning;
 	t_philo			*array_of_philos;
 	pthread_mutex_t lock_end;
+	pthread_mutex_t	*forks;
 	bool			meal_counter;
 	bool			end_flag;
 }	t_monitor;
 
-typedef struct	s_forks
-{
-	// mutex and id
-	pthread_mutex_t lock;
-	int				index;
-}	t_forks;
-
-void	philo_info_dump(t_monitor *m, t_philo *philo, int index, t_forks **forks);
-void	fork_info_dump(t_forks *fork, int i);
+void	philo_info_dump(t_monitor *m, t_philo *philo, int index, pthread_mutex_t *forks);
+void	fork_info_dump(pthread_mutex_t *fork);
 int		check_args(char **argv, t_monitor *m);
 int		ft_isdigit(int c);
 long	ft_atol(const char *str);
@@ -94,8 +92,11 @@ void	error(char *message);
 void	timestamp(long beginning, long *timestamp);
 long	get_ms();
 void	single_philo_routine(t_monitor *m, t_philo *p);
-void	state_message(long beginning, t_state state, int index);
+void	state_message(long beginning, t_state state, t_philo *p);
 int		init_philosophers(t_monitor *monitor, t_philo *philo);
 void	philo_eat(t_monitor *m, t_philo *p);
+void	*routine(void *data);
+void	*death_checker_thread(void *data);
+
 
 #endif

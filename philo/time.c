@@ -24,10 +24,11 @@
 
 void	timestamp(long beginning, long *timestamp)
 {
-	struct timeval	tv1;
+	long	ms;
 
-	gettimeofday(&tv1, NULL);
-	*timestamp = (tv1.tv_sec * 1000) + (tv1.tv_usec / 1000) - beginning;
+	ms = get_ms();
+	printf(MAGENTA"timestamp = %ld - %ld = %ld\n"RST, ms, beginning, get_ms() - beginning);
+	*timestamp = ms - beginning;
 }
 
 long	get_ms()

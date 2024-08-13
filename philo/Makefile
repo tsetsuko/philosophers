@@ -1,4 +1,4 @@
-CFILES = init.c main.c routine.c time.c utils.c activities.c 
+CFILES = init.c main.c routine.c time.c utils.c activities.c monitor.c
 NAME = philosophers
 CFLAGS = -Wall -Wextra -Werror -pthread
 CC = cc
@@ -8,6 +8,7 @@ all : $(NAME)
 
 $(NAME) : $(OFILES)
 	@$(CC) $(CFLAGS) $(OFILES) -o $(NAME)
+	make clean
 
 clean:
 	@rm -rf $(OFILES)

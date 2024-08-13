@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:10:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/08/09 23:13:39 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/08/12 14:56:34 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,32 +14,38 @@
 
 void	philo_eat(t_monitor *m, t_philo *p)
 {
+	printf(YELLOW"index[%d] entered philo eat\n"RST, p->index);
+	// printf(RST);
+
 	if (!(p->index % 2))
 	{
-		p->first_fork = p->forks[p->position + 1];
-		if (pthread_mutex_lock(&p->forks[(p->position + 1) % m->num_of_philos]->lock) == 0)
-			state_message(m->beginning, F_FORK, p->index);
-		p->second_fork = p->forks[p->position];
-		if (pthread_mutex_lock(&p->forks[(p->position)]->lock) == 0)
-			state_message(m->beginning, S_FORK, p->index);
+		if (pthread_mutex_lock(&p->forks[(p->position + 1) % m->num_of_philos]) == 0)
+			state_message(m->beginning, F_FORK, p);
+		else
+			error("philo eat");
+		if (pthread_mutex_lock(&p->forks[(p->position)]) == 0)
+			state_message(m->beginning, S_FORK, p);
+		else
+			error("philo eat");
 	}
 	else
 	{
-		p->first_fork = p->forks[p->position];
-		if (pthread_mutex_lock(&p->forks[(p->position)]->lock) == 0)
-			state_message(m->beginning, F_FORK, p->index);
-		p->second_fork = p->forks[(p->position + 1) % m->num_of_philos];
-		if (pthread_mutex_lock(&p->forks[(p->position + 1) % m->num_of_philos]->lock) == 0)
-			state_message(m->beginning, S_FORK, p->index);
+		if (pthread_mutex_lock(&p->forks[p->position]) == 0)
+			state_message(m->beginning, F_FORK, p);
+		else
+			error("philo eat");
+		if (pthread_mutex_lock(&p->forks[(p->position + 1) % m->num_of_philos]) == 0)
+			state_message(m->beginning, S_FORK, p);
+		else
+			error("philo eat");
 	}
-	if (p->first_fork && p->second_fork)
-	{
-		state_message(m->beginning, EAT, p->index);
-		timestamp(m->beginning, &p->last_meal_time);
-		usleep(m->time_of_eating * 1000);
-		if (m->meal_counter == true)
-			p->meal_counter++;
-		pthread_mutex_unlock(&p->forks[(p->position + 1) % m->num_of_philos]->lock);
-		pthread_mutex_unlock(&p->forks[(p->position)]->lock);
-	}
+	p->eating = true;
+	state_message(m->beginning, EAT, p);
+	timestamp(m->beginning, &p->last_meal_time);
+	usleep(m->time_of_eating * 1000);
+	p->eating = false;
+	if (m->meal_counter == true)
+		p->meal_counter++;
+	pthread_mutex_unlock(&p->forks[(p->position + 1) % m->num_of_philos]);
+	pthread_mutex_unlock(&p->forks[(p->position)]);
 }
