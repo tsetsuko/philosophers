@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 15:17:15 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/08/12 14:10:53 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/08/13 19:21:56 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ typedef struct s_philo
 	int					position;
 	pthread_mutex_t		*first_fork;
 	pthread_mutex_t		*second_fork;
-	pthread_mutex_t		write_message;
+	// pthread_mutex_t		write_message;
 	pthread_mutex_t		last_meal_lock;
 	bool				death_flag;
 	bool				eating;
@@ -65,7 +65,7 @@ typedef struct s_philo
 typedef struct s_monitor
 {
 	// first argument -> number of philos and at the same time number of forks
-	int				num_of_philos;
+	long			num_of_philos;
 	// second argument -> time a philo can spend without eating,
 	// after that time, philo dies
 	long			die;
@@ -77,8 +77,10 @@ typedef struct s_monitor
 	int				meals;
 	long			beginning;
 	t_philo			*array_of_philos;
-	pthread_mutex_t lock_end;
+	pthread_mutex_t lock_bools;
 	pthread_mutex_t	*forks;
+	pthread_mutex_t	lock_long_var;
+	pthread_mutex_t	write_message;
 	bool			meal_counter;
 	bool			end_flag;
 }	t_monitor;
@@ -92,11 +94,17 @@ void	error(char *message);
 void	timestamp(long beginning, long *timestamp);
 long	get_ms();
 void	single_philo_routine(t_monitor *m, t_philo *p);
-void	state_message(long beginning, t_state state, t_philo *p);
+void	state_message(t_state state, t_philo *p);
 int		init_philosophers(t_monitor *monitor, t_philo *philo);
 void	philo_eat(t_monitor *m, t_philo *p);
 void	*routine(void *data);
 void	*death_checker_thread(void *data);
+long	get_long(long *var, pthread_mutex_t *lock);
+void	set_long(long *src, long dest, pthread_mutex_t *lock);
+bool	get_bool(bool *var, pthread_mutex_t *lock);
+void	set_bool(bool *src, bool dest, pthread_mutex_t *lock);
+
+
 
 
 #endif

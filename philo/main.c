@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 22:14:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/08/12 14:02:11 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/08/13 19:25:07 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,22 +24,21 @@ int	start_simulation(t_monitor *m, t_philo *p)
 	int i;
 
 	i = 0;
-	m->beginning = get_ms();
+	set_long(&m->beginning, get_ms(), &m->lock_long_var);
 	printf(MAGENTA"start sim beginning: %ld\n"RST, m->beginning);
-	if (m->num_of_philos == 1)
+	if (get_long(&m->num_of_philos, &m->lock_long_var) == 1)
 		single_philo_routine(m, p);
 	else
 	{	
-		while (i < m->num_of_philos)
+		// while (i < m->num_of_philos)
+		while (i < get_long(&m->num_of_philos, &m->lock_long_var))
 		{
 			printf("entered create thread loop\n");
 			if (pthread_create(&(p[i].philo_thread), NULL, &routine, &p[i]) != 0)
 			{
-				error("thread gone bad");
-				// return (0);	
+				error("thread not created");
+				return (0);
 			}
-			else
-				printf("thread create ok\n");
 			i++;
 		}
 	}
@@ -88,6 +87,9 @@ int	init_philosophers(t_monitor *monitor, t_philo *philo)
 
 static int	init_monitor(t_monitor *m, char **argv)
 {
+	pthread_mutex_init(&m->lock_bools, NULL);
+	pthread_mutex_init(&m->lock_long_var, NULL);
+	// pthread_mutex_init(&m->write_message, NULL);
 	m->meal_counter = false;
 	m->end_flag = false;
 	m->array_of_philos = (t_philo *)malloc(sizeof(t_philo) * m->num_of_philos);
@@ -106,6 +108,7 @@ static int	init_monitor(t_monitor *m, char **argv)
 		m->meal_counter = true;
 	return (1);
 }
+
 int main(int argc, char **argv)
 {
 	t_monitor monitor;

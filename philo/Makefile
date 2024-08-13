@@ -1,4 +1,4 @@
-CFILES = init.c main.c routine.c time.c utils.c activities.c monitor.c
+CFILES = init.c main.c routine.c time.c utils.c activities.c monitor.c get_and_set.c 
 NAME = philosophers
 CFLAGS = -Wall -Wextra -Werror -pthread
 CC = cc

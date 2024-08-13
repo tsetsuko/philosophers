@@ -13,7 +13,7 @@ void	*death_checker_thread(void *data)
 	if (!(p->eating))
 	{
 		p->death_flag = true;
-		state_message(p->monitor->beginning, DIE, p);
+		state_message(DIE, p);
 		p->monitor->end_flag = true;
 	}
 
