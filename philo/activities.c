@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:10:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/08/13 19:16:57 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/03 16:03:37 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,35 +16,17 @@ void	philo_eat(t_monitor *m, t_philo *p)
 {
 	printf(YELLOW"index[%d] entered philo eat\n"RST, p->index);
 	// printf(RST);
-	if (!(p->index % 2))
-	{
-		if (pthread_mutex_lock(&p->forks[(p->position + 1) % m->num_of_philos]) == 0)
-			state_message(F_FORK, p);
-		else
-			error("philo eat");
-		if (pthread_mutex_lock(&p->forks[(p->position)]) == 0)
-			state_message(S_FORK, p);
-		else
-			error("philo eat");
-	}
-	else
-	{
-		if (pthread_mutex_lock(&p->forks[p->position]) == 0)
-			state_message(F_FORK, p);
-		else
-			error("philo eat");
-		if (pthread_mutex_lock(&p->forks[(p->position + 1) % m->num_of_philos]) == 0)
-			state_message(S_FORK, p);
-		else
-			error("philo eat");
-	}
-	p->eating = true;
+	safe_mutex_functions(LOCK, p->first_fork);
+	state_message(F_FORK, p);
+	safe_mutex_functions(LOCK, p->second_fork);
+	state_message(S_FORK, p);
+	set_bool(&p->eating, true, p->lock_bool);
 	state_message(EAT, p);
 	timestamp(get_long(&m->beginning, &m->lock_long_var), &p->last_meal_time);
 	usleep(m->time_of_eating * 1000);
-	p->eating = false;
+	set_bool(&p->eating, false, p->lock_bool);
 	if (m->meal_counter == true)
 		p->meal_counter++;
-	pthread_mutex_unlock(&p->forks[(p->position + 1) % m->num_of_philos]);
-	pthread_mutex_unlock(&p->forks[(p->position)]);
+	safe_mutex_functions(UNLOCK, p->first_fork);
+	safe_mutex_functions(UNLOCK, p->second_fork);
 }

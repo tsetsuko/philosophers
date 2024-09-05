@@ -1,4 +1,5 @@
-CFILES = init.c main.c routine.c time.c utils.c activities.c monitor.c get_and_set.c 
+CFILES = init.c main.c routine.c time.c utils.c activities.c monitor.c get_and_set.c utils/error.c \
+		 utils/ft_atol.c 
 NAME = philosophers
 CFLAGS = -Wall -Wextra -Werror -pthread
 CC = cc
@@ -19,3 +20,6 @@ fclean: clean
 re: fclean all 
 
 .PHONY: all clean fclean re 
+
+valid_test:
+	$(CC) $(CFLAGS) unity/src/unity.c test/validation_test.c utils.c utils/error.c utils/ft_atoi.c utils/ft_atol.c

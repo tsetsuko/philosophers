@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 22:14:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/08/13 19:25:07 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/03 16:07:28 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,22 @@ int	start_simulation(t_monitor *m, t_philo *p)
 		single_philo_routine(m, p);
 	else
 	{	
-		// while (i < m->num_of_philos)
-		while (i < get_long(&m->num_of_philos, &m->lock_long_var))
+		while (i < m->num_of_philos)
+		// while (i < get_long(&m->num_of_philos, &m->lock_long_var))
 		{
-			printf("entered create thread loop\n");
+			// printf("entered create thread loop\n");
 			if (pthread_create(&(p[i].philo_thread), NULL, &routine, &p[i]) != 0)
 			{
 				error("thread not created");
 				return (0);
 			}
 			i++;
+			if (pthread_create(&(p[i].philo_thread), NULL, &routine, &p[i]) != 0)
+			{
+				error("thread not created");
+				return (0);
+			}
+			// i++;
 		}
 	}
 	i = 0;
@@ -79,35 +85,12 @@ int	init_philosophers(t_monitor *monitor, t_philo *philo)
 	while (i < monitor->num_of_philos)
 	{
 		philo_info_dump(monitor, &philo[i], i, monitor->forks);
-		fork_info_dump(&monitor->forks[i]);
+		safe_mutex_functions(INIT, &monitor->forks[i]);
 		i++;
 	}
 	return (1);
 }
 
-static int	init_monitor(t_monitor *m, char **argv)
-{
-	pthread_mutex_init(&m->lock_bools, NULL);
-	pthread_mutex_init(&m->lock_long_var, NULL);
-	// pthread_mutex_init(&m->write_message, NULL);
-	m->meal_counter = false;
-	m->end_flag = false;
-	m->array_of_philos = (t_philo *)malloc(sizeof(t_philo) * m->num_of_philos);
-	if (!m->array_of_philos)
-	{
-		error("couldn't malloc() philos\n");
-		return (0);
-	}
-	m->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * m->num_of_philos);
-	if (!m->forks)
-	{
-		error("couldn't malloc() forks\n");
-		return (0);
-	}
-	if (argv[5])
-		m->meal_counter = true;
-	return (1);
-}
 
 int main(int argc, char **argv)
 {
@@ -116,7 +99,7 @@ int main(int argc, char **argv)
 	if (argc == 5 || argc == 6)
 	{
 		// 🧾 🧾 check if the arguments are all non-alpha
-		if (!check_args(argv, &monitor))
+		if (!check_args(argv, &monitor, argc))
 			return (1);
 		if (!init_monitor(&monitor, argv))
 			return (2);
