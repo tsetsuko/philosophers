@@ -30,8 +30,8 @@ bool	check_philo_death(t_philo *philo, t_monitor *m)
 	long	time_to_die;
 
 	time_to_die = get_long(&m->die, &m->lock_long_var);
-	if (time_to_die <= get_ms() - get_long(&philo->last_meal_time, philo->last_meal_lock)
-		&& !get_bool(&philo->eating, &m->lock_bools))
+	if (time_to_die <= (get_ms() - get_long(&philo->last_meal_time, philo->last_meal_lock))
+		&& !(get_bool(&philo->eating, &m->lock_bools)))
 			return (true);
 	else
 		return (false);
@@ -58,34 +58,37 @@ void	*monitor_routine(void *data)
 	t_monitor *m;
 
 	m = (t_monitor *)data;
-	while (!get_bool(&m->end_flag, &m->end_lock))
+	while (1)
 	{
 		if (death_checker(&m->array_of_philos, m) || meal_counter(m, &m->array_of_philos))
+		{
 			set_bool(&m->end_flag, true, &m->lock_bools);
+			break	;
+		}
 	}
 	return (NULL);
 }
 
 
-void	*death_checker_thread(void *data)
-{
-	t_philo *p;
+// void	*death_checker_thread(void *data)
+// {
+// 	t_philo *p;
 
-	p = (t_philo *)data;
-	while (p->monitor->die > get_ms() - p->last_meal_time)
-	{
-		usleep(1000);
-		//end simulation
-	}
-	if (!(p->eating))
-	{
-		// p->death_flag = true;
-		state_message(DIE, p);
-		p->monitor->end_flag = true;
-	}
+// 	p = (t_philo *)data;
+// 	while (p->monitor->die > get_ms() - p->last_meal_time)
+// 	{
+// 		usleep(1000);
+// 		//end simulation
+// 	}
+// 	if (!(p->eating))
+// 	{
+// 		// p->death_flag = true;
+// 		state_message(DIE, p);
+// 		p->monitor->end_flag = true;
+// 	}
 
-	return (NULL);
-}
+// 	return (NULL);
+// }
 
 int	init_monitor(t_monitor *m, char **argv)
 {
@@ -95,7 +98,7 @@ int	init_monitor(t_monitor *m, char **argv)
 	safe_mutex_functions(INIT, &m->write_lock);
 	safe_mutex_functions(INIT, &m->meal_lock);
 	m->meal_counter = false;
-	m->end_flag = false;
+	set_bool(&m->end_flag, false, &m->end_lock);
 	m->array_of_philos = (t_philo *)malloc(sizeof(t_philo) * m->num_of_philos);
 	if (!m->array_of_philos)
 		return (error("couldn't malloc() philos\n"));

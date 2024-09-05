@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:10:21 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/05 15:00:31 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/05 16:29:29 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,14 @@ void	philo_sleep(t_monitor *m, long time)
 {
 	// long	wake_up;
 	long	now;
+	(void)m;
 
 	now = get_ms();
 	// wake_up = now + time;
 	while (time > get_ms() - now)
 	{
-		if (m->end_flag)
-		{
-			printf("end\n");
-			break ;
-		}
+		// if (get_bool(&m->end_flag, &m->end_lock))
+		// 	break ;
 		usleep(100);
 	}
 }
@@ -99,7 +97,7 @@ void	*routine(void *data)
 	// if (pthread_create(&death_checker, NULL, &death_checker_thread, p) == 0)
 	// 	printf("supervisor goes\n");
 	// while (get_bool(&p->monitor->end_flag, &p->monitor->lock_bools) == false)
-	while (get_bool(p->end_flag, p->end_lock))
+	while (1)
 	{
 		// printf("entered routine loop\n");
 		philo_eat(p->monitor, p);
@@ -110,6 +108,8 @@ void	*routine(void *data)
 		philo_sleep(p->monitor, get_long(&p->monitor->sleep, &p->monitor->lock_long_var));
 	// think
 		state_message(THINK, p);
+		// if (get_bool(p->end_flag, p->end_lock) == true)
+		// 	printf("why end\n");
 	// death_checker
 	//		again!
 	// if time_to_die passed --> die flag --> monitor ends the simulation}
