@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 15:17:15 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/03 16:01:19 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/05 14:56:49 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,8 @@ bool	get_bool(bool *var, pthread_mutex_t *lock);
 void	set_bool(bool *src, bool dest, pthread_mutex_t *lock);
 // MONITOR 
 int		init_monitor(t_monitor *m, char **argv);
-void	*death_checker_thread(void *data);
-
+// void	*death_checker_thread(void *data);
+void	*monitor_routine(void *data);
+bool	death_checker(t_philo **philos, t_monitor *m);
 
 #endif

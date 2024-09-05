@@ -27,7 +27,7 @@ void	timestamp(long beginning, long *timestamp)
 	long	ms;
 
 	ms = get_ms();
-	printf(MAGENTA"timestamp = %ld - %ld = %ld\n"RST, ms, beginning, get_ms() - beginning);
+	// printf(MAGENTA"timestamp = %ld - %ld = %ld\n"RST, ms, beginning, get_ms() - beginning);
 	*timestamp = ms - beginning;
 }
 

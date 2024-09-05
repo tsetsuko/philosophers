@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 22:14:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/03 16:07:28 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/05 14:55:34 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 int	start_simulation(t_monitor *m, t_philo *p)
 {
 	int i;
+	pthread_t monitor;
 
 	i = 0;
 	set_long(&m->beginning, get_ms(), &m->lock_long_var);
@@ -30,33 +31,25 @@ int	start_simulation(t_monitor *m, t_philo *p)
 		single_philo_routine(m, p);
 	else
 	{	
-		while (i < m->num_of_philos)
-		// while (i < get_long(&m->num_of_philos, &m->lock_long_var))
+		while (i < get_long(&m->num_of_philos, &m->lock_long_var))
 		{
 			// printf("entered create thread loop\n");
 			if (pthread_create(&(p[i].philo_thread), NULL, &routine, &p[i]) != 0)
-			{
 				error("thread not created");
-				return (0);
-			}
 			i++;
-			if (pthread_create(&(p[i].philo_thread), NULL, &routine, &p[i]) != 0)
-			{
-				error("thread not created");
-				return (0);
-			}
-			// i++;
 		}
 	}
-	i = 0;
-	// while (i < m->num_of_philos)
-	// {
-	// 	pthread_join(p[i]->philo_thread, NULL);
-	// 	i++;
-	// }
 	// start monitor thread
-	// if (m->num_of_philos > 1)
-	//		
+	if (get_long(&m->num_of_philos, &m->lock_long_var) > 1)
+		pthread_create(&monitor, NULL, &monitor_routine, m);
+	i = 0;
+	while (i < get_long(&m->num_of_philos, &m->lock_long_var))
+	{
+		pthread_join(p[i].philo_thread, NULL);
+		i++;
+	}
+	if (get_long(&m->num_of_philos, &m->lock_long_var) > 1)
+		pthread_join(monitor, NULL);
 	return (1);
 }
 	/*

@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/13 18:31:50 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/08/13 19:01:02 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/05 13:44:28 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,32 +18,32 @@ long	get_long(long *var, pthread_mutex_t *lock)
 {
 	long ret;
 
-	pthread_mutex_lock(lock);
+	safe_mutex_functions(LOCK, lock);
 	ret = *var;
-	pthread_mutex_unlock(lock);
+	safe_mutex_functions(UNLOCK, lock);
 	return (ret);
 }
 
 void	set_long(long *src, long dest, pthread_mutex_t *lock)
 {
-	pthread_mutex_lock(lock);
+	safe_mutex_functions(LOCK, lock);
 	*src = dest;
-	pthread_mutex_unlock(lock);
+	safe_mutex_functions(UNLOCK, lock);
 }
 
 bool	get_bool(bool *var, pthread_mutex_t *lock)
 {
 	bool ret;
 
-	pthread_mutex_lock(lock);
+	safe_mutex_functions(LOCK, lock);
 	ret = *var;
-	pthread_mutex_unlock(lock);
+	safe_mutex_functions(UNLOCK, lock);
 	return (ret);
 }
 
 void	set_bool(bool *src, bool dest, pthread_mutex_t *lock)
 {
-	pthread_mutex_lock(lock);
+	safe_mutex_functions(LOCK, lock);
 	*src = dest;
-	pthread_mutex_unlock(lock);
+	safe_mutex_functions(UNLOCK, lock);
 }

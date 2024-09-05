@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:10:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/03 16:03:37 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/05 14:44:06 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	philo_eat(t_monitor *m, t_philo *p)
 {
-	printf(YELLOW"index[%d] entered philo eat\n"RST, p->index);
+	// printf(YELLOW"index[%d] entered philo eat\n"RST, p->index);
 	// printf(RST);
 	safe_mutex_functions(LOCK, p->first_fork);
 	state_message(F_FORK, p);
@@ -26,6 +26,11 @@ void	philo_eat(t_monitor *m, t_philo *p)
 	usleep(m->time_of_eating * 1000);
 	set_bool(&p->eating, false, p->lock_bool);
 	if (m->meal_counter == true)
+	{
+		safe_mutex_functions(LOCK, &m->lock_long_var);
+		p->meal_counter++;
+		safe_mutex_functions(UNLOCK, &m->lock_long_var);
+	}
 		p->meal_counter++;
 	safe_mutex_functions(UNLOCK, p->first_fork);
 	safe_mutex_functions(UNLOCK, p->second_fork);

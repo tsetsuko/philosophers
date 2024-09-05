@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:10:21 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/03 16:05:37 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/05 15:00:31 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	philo_sleep(t_monitor *m, long time)
 	}
 }
 
-int	death_checker(t_monitor *m, t_philo *philo, long beginning)
+int	death_checker_s(t_monitor *m, t_philo *philo, long beginning)
 {
 	long	now_time;
 
@@ -52,7 +52,7 @@ void	single_philo_routine(t_monitor *m, t_philo *p)
 	safe_mutex_functions(LOCK, p->first_fork);
 	state_message(F_FORK, p);
 	philo_sleep(m, m->die); 
-	death_checker(m, p, m->beginning);
+	death_checker_s(m, p, m->beginning);
 	safe_mutex_functions(UNLOCK, p->first_fork);
 }
 
@@ -75,6 +75,8 @@ void	state_message(t_state state, t_philo *p)
 		printf("%ldms %d has taken second fork\n", ms, p->index);
 	else if (state == F_FORK)
 		printf("%ldms %d has taken first fork\n", ms, p->index);
+	else if (state == THINK)
+		printf("%ldms %d is thinking\n", ms, p->index);
 	else
 		error("wrong enum for the state message\n");
 	safe_mutex_functions(UNLOCK, p->write_lock);
@@ -87,9 +89,9 @@ void	*routine(void *data)
 	// pthread_t	death_checker;
 
 	i = 0;
-	printf("entered routine\n");
+	// printf("entered routine\n");
 	p = (t_philo *)data;
-	// pthread_mutex_lock(&p->last_meal_lock);
+	// safe_mutex_functions(LOCK, p->last_meal_lock);
 	// p->last_meal_time = get_long(&p->monitor->beginning, &p->monitor->lock_long_var);
 	// pthread_mutex_unlock(&p->last_meal_lock);
 	// printf("beginning [%d]: %ld\n", p->index, p->monitor->beginning);
@@ -97,21 +99,21 @@ void	*routine(void *data)
 	// if (pthread_create(&death_checker, NULL, &death_checker_thread, p) == 0)
 	// 	printf("supervisor goes\n");
 	// while (get_bool(&p->monitor->end_flag, &p->monitor->lock_bools) == false)
-	// while (1)
-	// {
-		printf("entered routine loop\n");
-		// philo_eat(p->monitor, p);
+	while (get_bool(p->end_flag, p->end_lock))
+	{
+		// printf("entered routine loop\n");
+		philo_eat(p->monitor, p);
 	// sleep
-		// state_message(SLEEP, p);
+		state_message(SLEEP, p);
 		// printf("%ld\n", get_long(&p->monitor->sleep, &p->monitor->lock_long_var));
 		usleep(2000000);
-		// philo_sleep(p->monitor, get_long(&p->monitor->sleep, &p->monitor->lock_long_var));
+		philo_sleep(p->monitor, get_long(&p->monitor->sleep, &p->monitor->lock_long_var));
 	// think
-		// state_message(THINK, p);
+		state_message(THINK, p);
 	// death_checker
 	//		again!
 	// if time_to_die passed --> die flag --> monitor ends the simulation}
-	// }
+	}
 	return (NULL);
 	
 }
