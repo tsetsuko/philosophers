@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:10:21 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/11 15:20:53 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/11 18:39:56 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,30 +89,30 @@ void	*routine(void *data)
 	i = 0;
 	// printf("entered routine\n");
 	p = (t_philo *)data;
-	// safe_mutex_functions(LOCK, p->last_meal_lock);
-	// p->last_meal_time = get_long(&p->monitor->beginning, &p->monitor->lock_long_var);
-	// pthread_mutex_unlock(&p->last_meal_lock);
+	safe_mutex_functions(LOCK, p->last_meal_lock);
+	p->last_meal_time = get_long(&p->monitor->beginning, &p->monitor->lock_long_var);
+	safe_mutex_functions(UNLOCK, p->last_meal_lock);
 	// printf("beginning [%d]: %ld\n", p->index, p->monitor->beginning);
 	// printf("hey it's %d\n", p->index);
 	// if (pthread_create(&death_checker, NULL, &death_checker_thread, p) == 0)
 	// 	printf("supervisor goes\n");
-	// while (get_bool(&p->monitor->end_flag, &p->monitor->lock_bools) == false)
-	while (1)
+	// while (1)
+	while (get_bool(&p->monitor->end_flag, &p->monitor->end_lock) == false)
 	{
 		// printf("entered routine loop\n");
 		philo_eat(p->monitor, p);
 	// sleep
+		if (get_bool(&p->monitor->end_flag, &p->monitor->end_lock) == true)
+			break	;
 		state_message(SLEEP, p);
 		// printf("%ld\n", get_long(&p->monitor->sleep, &p->monitor->lock_long_var));
 		// usleep(2000000);
 		philo_sleep(p->monitor, get_long(&p->monitor->sleep, &p->monitor->lock_long_var));
 	// think
+		if (get_bool(&p->monitor->end_flag, &p->monitor->end_lock) == true)
+			break	;
 		state_message(THINK, p);
-		// if (get_bool(p->end_flag, p->end_lock) == true)
-		// 	printf("why end\n");
-	// death_checker
-	//		again!
-	// if time_to_die passed --> die flag --> monitor ends the simulation}
+		// printf("boolean end_flag: %d\n", get_bool(&p->monitor->end_flag, &p->monitor->end_lock));
 	}
 	return (NULL);
 	

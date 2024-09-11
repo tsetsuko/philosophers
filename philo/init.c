@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 17:55:00 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/03 16:01:55 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/11 18:32:07 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ void	safe_mutex_functions(t_mutex_ft func, pthread_mutex_t *mutex)
 void	philo_info_dump(t_monitor *m, t_philo *philo, int index, pthread_mutex_t *forks)
 {
 	philo->last_meal_lock = &m->meal_lock;
+	philo->eating = false;
 	philo->end_lock = &m->end_lock;
 	philo->write_lock = &m->write_lock;
 	philo->lock_bool = &m->lock_bools;
@@ -55,16 +56,16 @@ void	philo_info_dump(t_monitor *m, t_philo *philo, int index, pthread_mutex_t *f
 	philo->monitor = m;
 	philo->index = index + 1;
 	philo->position = index;
-	philo->meal_counter = 0;	
+	philo->meal_counter = 0;
 	if (!(philo->index % 2) && m->num_of_philos > 1)
 	{
-		philo->first_fork = &forks[(philo->position + 1) % m->num_of_philos];
-		philo->second_fork = &forks[(philo->position)];
+		philo->first_fork =  &forks[(philo->position)];
+		philo->second_fork =  &forks[(philo->position + 1) % m->num_of_philos];
 	}
 	else if ((philo->index % 2) && m->num_of_philos > 1)
 	{
-		philo->first_fork = &forks[(philo->position)];
-		philo->second_fork = &forks[(philo->position + 1) % m->num_of_philos];
+		philo->first_fork =  &forks[(philo->position + 1) % m->num_of_philos];
+		philo->second_fork = &forks[(philo->position)];
 	}
 	else
 		philo->first_fork = &forks[0];

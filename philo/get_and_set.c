@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/13 18:31:50 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/05 13:44:28 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/11 18:02:17 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ bool	get_bool(bool *var, pthread_mutex_t *lock)
 
 	safe_mutex_functions(LOCK, lock);
 	ret = *var;
+	if (ret == true)
+		printf("true boolean eating\n");
 	safe_mutex_functions(UNLOCK, lock);
 	return (ret);
 }

@@ -31,7 +31,8 @@ void	timestamp(long beginning, long *timestamp)
 	*timestamp = ms - beginning;
 }
 
-long	get_ms()
+long	
+get_ms()
 {
 	struct timeval	tv1;
 
