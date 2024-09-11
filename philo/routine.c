@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:10:21 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/05 16:29:29 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/11 15:20:53 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ void	*routine(void *data)
 	// sleep
 		state_message(SLEEP, p);
 		// printf("%ld\n", get_long(&p->monitor->sleep, &p->monitor->lock_long_var));
-		usleep(2000000);
+		// usleep(2000000);
 		philo_sleep(p->monitor, get_long(&p->monitor->sleep, &p->monitor->lock_long_var));
 	// think
 		state_message(THINK, p);

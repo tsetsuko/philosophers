@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 22:14:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/05 14:55:34 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/11 15:41:46 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,17 @@
 int	start_simulation(t_monitor *m, t_philo *p)
 {
 	int i;
-	pthread_t monitor;
+	long	num_of_p;
 
 	i = 0;
 	set_long(&m->beginning, get_ms(), &m->lock_long_var);
-	printf(MAGENTA"start sim beginning: %ld\n"RST, m->beginning);
-	if (get_long(&m->num_of_philos, &m->lock_long_var) == 1)
+	num_of_p = get_long(&m->num_of_philos, &m->lock_long_var);
+	// printf(MAGENTA"start sim beginning: %ld\n"RST, m->beginning);
+	if (num_of_p == 1)
 		single_philo_routine(m, p);
 	else
 	{	
-		while (i < get_long(&m->num_of_philos, &m->lock_long_var))
+		while (i < num_of_p)
 		{
 			// printf("entered create thread loop\n");
 			if (pthread_create(&(p[i].philo_thread), NULL, &routine, &p[i]) != 0)
@@ -40,16 +41,16 @@ int	start_simulation(t_monitor *m, t_philo *p)
 		}
 	}
 	// start monitor thread
-	if (get_long(&m->num_of_philos, &m->lock_long_var) > 1)
-		pthread_create(&monitor, NULL, &monitor_routine, m);
+	if (num_of_p > 1)
+		pthread_create(&m->death_checker, NULL, &monitor_routine, m);
 	i = 0;
-	while (i < get_long(&m->num_of_philos, &m->lock_long_var))
+	while (i < num_of_p)
 	{
 		pthread_join(p[i].philo_thread, NULL);
 		i++;
 	}
-	if (get_long(&m->num_of_philos, &m->lock_long_var) > 1)
-		pthread_join(monitor, NULL);
+	if (num_of_p > 1)
+		pthread_join(m->death_checker, NULL);
 	return (1);
 }
 	/*
@@ -87,18 +88,19 @@ int	init_philosophers(t_monitor *monitor, t_philo *philo)
 
 int main(int argc, char **argv)
 {
-	t_monitor monitor;
+	t_monitor *monitor;
 
+	monitor = (t_monitor *)malloc(sizeof(t_monitor) * 1);
 	if (argc == 5 || argc == 6)
 	{
 		// 🧾 🧾 check if the arguments are all non-alpha
-		if (!check_args(argv, &monitor, argc))
+		if (!check_args(argv, monitor, argc))
 			return (1);
-		if (!init_monitor(&monitor, argv))
+		if (!init_monitor(monitor, argv))
 			return (2);
-		if (!init_philosophers(&monitor, monitor.array_of_philos))
+		if (!init_philosophers(monitor, monitor->array_of_philos))
 			return (3);
-		if (!start_simulation(&monitor, monitor.array_of_philos))
+		if (!start_simulation(monitor, monitor->array_of_philos))
 			return (4);
 		// clean up -> destroy locks and stack memory
 	}

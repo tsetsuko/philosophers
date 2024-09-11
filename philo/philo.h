@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 15:17:15 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/05 14:56:49 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/11 15:30:05 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ typedef struct s_philo
 
 typedef struct s_monitor
 {
-	pthread_t			death_checker;
+	pthread_t		death_checker;
 	t_philo			*array_of_philos;
 	// first argument -> number of philos and at the same time number of forks
 	long			num_of_philos;
