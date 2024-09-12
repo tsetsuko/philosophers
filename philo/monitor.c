@@ -39,11 +39,15 @@ bool	check_philo_death(t_philo philo, t_monitor *m)
 	time_to_die = get_long(&m->die, &m->lock_long_var);
 	// now = get_ms();
 	// now = now - last_meal_time;
-	printf("since last meal: %ld\n", get_ms() - get_long(&philo.last_meal_time, philo.last_meal_lock));
+	// printf("since last meal: %ld\n", get_ms() - get_long(&philo.last_meal_time, philo.last_meal_lock));
 	// printf("last meal : %ld\n", last_meal_time);
 	if (time_to_die <= get_ms() - get_long(&philo.last_meal_time, philo.last_meal_lock)
 		&& (get_bool(&philo.eating, &m->lock_bools) == false))
-			return (true);
+			{
+				set_bool(&philo.dead, true, philo.lock_bool);
+				state_message(DIE, &philo);
+				return (true);
+			}
 	else
 		return (false);
 }
@@ -58,10 +62,7 @@ bool	death_checker(t_philo *philos, t_monitor *m)
 	while (i < num_of_philos)
 	{
 		if (check_philo_death(philos[i], m) == true)
-		{
-			printf("found philo that should die\n");
 			return (true);
-		}
 		i++;
 	}
 	return (false);
@@ -74,17 +75,19 @@ void	*monitor_routine(void *data)
 	m = (t_monitor *)data;
 	while (1)
 	{
-		usleep(100000);
-
+		usleep(10000);
 		if (death_checker(m->array_of_philos, m))
 		{
 			set_bool(&m->end_flag, true, &m->lock_bools);
 			break	;
 		}
-		if (meal_counter(m, m->array_of_philos))
+		if (get_bool(&m->meal_counter, &m->lock_bools))
 		{
-			set_bool(&m->end_flag, true, &m->end_lock);
-			break	;
+			if (meal_counter(m, m->array_of_philos))
+			{
+				set_bool(&m->end_flag, true, &m->end_lock);
+				break	;
+			}
 		}
 	}
 	return (NULL);

@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 17:55:00 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/11 18:32:07 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/12 13:02:28 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ void	safe_mutex_functions(t_mutex_ft func, pthread_mutex_t *mutex)
 void	philo_info_dump(t_monitor *m, t_philo *philo, int index, pthread_mutex_t *forks)
 {
 	philo->last_meal_lock = &m->meal_lock;
+	philo->dead = false;
 	philo->eating = false;
 	philo->end_lock = &m->end_lock;
 	philo->write_lock = &m->write_lock;

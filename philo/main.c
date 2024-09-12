@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 22:14:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/11 18:23:00 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/12 13:32:31 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ int	start_simulation(t_monitor *m, t_philo *p)
 	{	
 		while (i < num_of_p)
 		{
-			printf("entered create thread loop\n");
 			if (pthread_create(&(p[i].philo_thread), NULL, &routine, &p[i]) != 0)
 				error("thread not created");
 			i++;

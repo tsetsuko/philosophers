@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:10:21 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/11 18:39:56 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/12 13:30:50 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ void	state_message(t_state state, t_philo *p)
 	long	ms;
 	long	beginning;
 
-	// create a write lock
+	if (get_bool(&p->monitor->end_flag, &p->monitor->end_lock) == true)
+		return ;
 	safe_mutex_functions(LOCK, p->write_lock);
 	beginning = get_long(&p->monitor->beginning, &p->monitor->lock_long_var);
 	timestamp(beginning, &ms);
@@ -92,11 +93,6 @@ void	*routine(void *data)
 	safe_mutex_functions(LOCK, p->last_meal_lock);
 	p->last_meal_time = get_long(&p->monitor->beginning, &p->monitor->lock_long_var);
 	safe_mutex_functions(UNLOCK, p->last_meal_lock);
-	// printf("beginning [%d]: %ld\n", p->index, p->monitor->beginning);
-	// printf("hey it's %d\n", p->index);
-	// if (pthread_create(&death_checker, NULL, &death_checker_thread, p) == 0)
-	// 	printf("supervisor goes\n");
-	// while (1)
 	while (get_bool(&p->monitor->end_flag, &p->monitor->end_lock) == false)
 	{
 		// printf("entered routine loop\n");
@@ -115,5 +111,4 @@ void	*routine(void *data)
 		// printf("boolean end_flag: %d\n", get_bool(&p->monitor->end_flag, &p->monitor->end_lock));
 	}
 	return (NULL);
-	
 }

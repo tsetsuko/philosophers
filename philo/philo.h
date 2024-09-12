@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 15:17:15 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/11 17:48:19 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/12 13:02:36 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ typedef struct s_philo
 	pthread_mutex_t 	*lock_bool;
 	bool				*end_flag;
 	bool				eating;
+	bool				dead;
 }	t_philo;
 
 typedef struct s_monitor
