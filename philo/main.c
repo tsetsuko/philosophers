@@ -6,40 +6,35 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 22:14:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/12 13:32:31 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/16 14:33:29 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "philo.h"
-
-// bool	end_simulation()
-// {
-	// if death_flag
-
-// }
-
-int	start_simulation(t_monitor *m, t_philo *p)
+void	clean_up(t_monitor *m, t_philo *array)
 {
-	int i;
-	long	num_of_p;
+	free(array);
+	safe_mutex_functions(DESTROY, &m->end_lock);
+	safe_mutex_functions(DESTROY, &m->lock_bools);
+	safe_mutex_functions(DESTROY, &m->lock_long_var);
+	safe_mutex_functions(DESTROY, &m->meal_lock);
+	safe_mutex_functions(DESTROY, &m->write_lock);
+	free(m->forks);
+}
+
+
+int	multiple_philos_sim(long num_of_p, t_monitor *m, t_philo *p)
+{
+	long	i;
 
 	i = 0;
-	set_long(&m->beginning, get_ms(), &m->lock_long_var);
-	num_of_p = get_long(&m->num_of_philos, &m->lock_long_var);
-	// printf(MAGENTA"start sim beginning: %ld\n"RST, m->beginning);
-	if (num_of_p == 1)
-		single_philo_routine(m, p);
-	else
-	{	
-		while (i < num_of_p)
-		{
-			if (pthread_create(&(p[i].philo_thread), NULL, &routine, &p[i]) != 0)
-				error("thread not created");
-			i++;
-		}
+	while (i < num_of_p)
+	{
+		if (pthread_create(&(p[i].philo_thread), NULL, &routine, &p[i]) != 0)
+			error("thread not created");
+		i++;
 	}
-	// start monitor thread
 	if (num_of_p > 1)
 		pthread_create(&m->death_checker, NULL, &monitor_routine, m);
 	i = 0;
@@ -52,23 +47,19 @@ int	start_simulation(t_monitor *m, t_philo *p)
 		pthread_join(m->death_checker, NULL);
 	return (1);
 }
-	/*
-	start of simulation timestamp?
-	int i = 0;
 
-	timestamp(m->start_of_sim);
+int	start_simulation(t_monitor *m, t_philo *p)
+{
+	long	num_of_p;
 
-	if (num_of_philos == 1)
-		single_philo_routine();
-
-	while (i < m->num_of_philos)
-	{
-		routine(m, philo[i]);
-		i++;
-	}
-	start every philo thread
-	and monitor thread
-	*/
+	set_long(&m->beginning, get_ms(), &m->lock_long_var);
+	num_of_p = get_long(&m->num_of_philos, &m->lock_long_var);
+	if (num_of_p == 1)
+		single_philo_routine(m, p);
+	else
+		multiple_philos_sim(num_of_p, m, p);
+	return (1);
+}
 
 int	init_philosophers(t_monitor *monitor, t_philo *philo)
 {
@@ -101,7 +92,7 @@ int main(int argc, char **argv)
 			return (3);
 		if (!start_simulation(monitor, monitor->array_of_philos))
 			return (4);
-		// clean up -> destroy locks and stack memory
+		clean_up(monitor, monitor->array_of_philos);
 	}
 	return (0);
 

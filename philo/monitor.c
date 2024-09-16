@@ -75,7 +75,7 @@ void	*monitor_routine(void *data)
 	m = (t_monitor *)data;
 	while (1)
 	{
-		usleep(10000);
+		usleep(100);
 		if (death_checker(m->array_of_philos, m))
 		{
 			set_bool(&m->end_flag, true, &m->lock_bools);

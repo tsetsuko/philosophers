@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:10:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/11 18:35:59 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/16 14:34:11 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 
 void	philo_eat(t_monitor *m, t_philo *p)
 {
-	// printf(YELLOW"index[%d] entered philo eat\n"RST, p->index);
-	// printf(RST);
 	if (get_bool(&p->monitor->end_flag, &p->monitor->end_lock) == true)
 		return	;
 	safe_mutex_functions(LOCK, p->first_fork);
@@ -27,8 +25,6 @@ void	philo_eat(t_monitor *m, t_philo *p)
 	state_message(EAT, p);
 	set_long(&p->last_meal_time, get_ms(), p->last_meal_lock);
 	set_bool(&p->eating, true, p->lock_bool);
-	// timestamp(get_long(&m->beginning, &m->lock_long_var), &p->last_meal_time);
-	// printf("last meal time :%ld\n", get_long(&p->last_meal_time, p->last_meal_lock));
 	usleep(m->time_of_eating * 1000);
 	if (m->meal_counter == true)
 	{
@@ -39,4 +35,33 @@ void	philo_eat(t_monitor *m, t_philo *p)
 	safe_mutex_functions(UNLOCK, p->first_fork);
 	safe_mutex_functions(UNLOCK, p->second_fork);
 	set_bool(&p->eating, false, p->lock_bool);
+}
+void	philo_think(t_philo *p)
+{
+	long	now;
+
+	now = get_ms();
+	state_message(THINK, p);
+	while (p->time_to_think > get_ms() - now)
+	{
+		if (get_bool(p->end_flag, p->end_lock))
+			break ;
+		usleep(100);
+	}
+}
+// this function will provide sleep for the philo but it will also check
+// if the simulation hasn't stopped in the meanwhile
+void	philo_sleep(t_philo *p, long time)
+{
+	// long	wake_up;
+	long	now;
+
+	state_message(SLEEP, p);
+	now = get_ms();
+	while (time > get_ms() - now)
+	{
+		if (get_bool(p->end_flag, p->end_lock))
+			break ;
+		usleep(100);
+	}
 }

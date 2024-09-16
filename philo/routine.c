@@ -6,29 +6,11 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:10:21 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/12 13:30:50 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/16 14:04:15 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-// this function will provide sleep for the philo but it will also check
-// if the simulation hasn't stopped in the meanwhile
-void	philo_sleep(t_monitor *m, long time)
-{
-	// long	wake_up;
-	long	now;
-	(void)m;
-
-	now = get_ms();
-	// wake_up = now + time;
-	while (time > get_ms() - now)
-	{
-		// if (get_bool(&m->end_flag, &m->end_lock))
-		// 	break ;
-		usleep(100);
-	}
-}
 
 int	death_checker_s(t_monitor *m, t_philo *philo, long beginning)
 {
@@ -37,10 +19,8 @@ int	death_checker_s(t_monitor *m, t_philo *philo, long beginning)
 	timestamp(beginning, &now_time);
 	if (m->die <= now_time)
 	{
-		// philo->death_flag = true;
 		state_message(DIE, philo);
 		m->end_flag = true;
-		//end simulation
 	}
 	return (1);
 }
@@ -49,7 +29,7 @@ void	single_philo_routine(t_monitor *m, t_philo *p)
 {
 	safe_mutex_functions(LOCK, p->first_fork);
 	state_message(F_FORK, p);
-	philo_sleep(m, m->die); 
+	philo_sleep(p, m->die); 
 	death_checker_s(m, p, m->beginning);
 	safe_mutex_functions(UNLOCK, p->first_fork);
 }
@@ -85,30 +65,21 @@ void	*routine(void *data)
 {
 	int			i;
 	t_philo 	*p;
-	// pthread_t	death_checker;
 
 	i = 0;
-	// printf("entered routine\n");
 	p = (t_philo *)data;
 	safe_mutex_functions(LOCK, p->last_meal_lock);
 	p->last_meal_time = get_long(&p->monitor->beginning, &p->monitor->lock_long_var);
 	safe_mutex_functions(UNLOCK, p->last_meal_lock);
 	while (get_bool(&p->monitor->end_flag, &p->monitor->end_lock) == false)
 	{
-		// printf("entered routine loop\n");
 		philo_eat(p->monitor, p);
-	// sleep
 		if (get_bool(&p->monitor->end_flag, &p->monitor->end_lock) == true)
 			break	;
-		state_message(SLEEP, p);
-		// printf("%ld\n", get_long(&p->monitor->sleep, &p->monitor->lock_long_var));
-		// usleep(2000000);
-		philo_sleep(p->monitor, get_long(&p->monitor->sleep, &p->monitor->lock_long_var));
-	// think
-		if (get_bool(&p->monitor->end_flag, &p->monitor->end_lock) == true)
+		philo_sleep(p, get_long(&p->monitor->sleep, &p->monitor->lock_long_var));
+		if (get_bool(p->end_flag, p->end_lock) == true)
 			break	;
-		state_message(THINK, p);
-		// printf("boolean end_flag: %d\n", get_bool(&p->monitor->end_flag, &p->monitor->end_lock));
+		philo_think(p);
 	}
 	return (NULL);
 }

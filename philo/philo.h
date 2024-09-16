@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 15:17:15 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/12 13:02:36 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/16 14:09:48 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ typedef struct s_philo
 	pthread_mutex_t		*last_meal_lock;
 	long				last_meal_time; // will be accessed by monitor! get a mutex 🔐
 	long				meal_counter; // will be accessed by monitor 🔐
+	long				time_to_think;
 	t_monitor			*monitor;
 	int					position;
 	pthread_mutex_t		*first_fork;
@@ -112,6 +113,8 @@ void	state_message(t_state state, t_philo *p);
 int		init_philosophers(t_monitor *monitor, t_philo *philo);
 void	philo_eat(t_monitor *m, t_philo *p);
 void	*routine(void *data);
+void	philo_sleep(t_philo *p, long time);
+void	philo_think(t_philo *p);
 // MUTEX
 int		handle_mutex(int status, t_mutex_ft func);
 void	safe_mutex_functions(t_mutex_ft func, pthread_mutex_t *mutex);

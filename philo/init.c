@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 17:55:00 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/12 13:02:28 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/09/16 13:51:41 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void	philo_info_dump(t_monitor *m, t_philo *philo, int index, pthread_mutex_t *f
 	philo->dead = false;
 	philo->eating = false;
 	philo->end_lock = &m->end_lock;
+	philo->end_flag = &m->end_flag;
 	philo->write_lock = &m->write_lock;
 	philo->lock_bool = &m->lock_bools;
 	philo->lock_long = &m->lock_long_var;
@@ -58,6 +59,7 @@ void	philo_info_dump(t_monitor *m, t_philo *philo, int index, pthread_mutex_t *f
 	philo->index = index + 1;
 	philo->position = index;
 	philo->meal_counter = 0;
+	philo->time_to_think = (m->die - m->time_of_eating - m->sleep) / 2;
 	if (!(philo->index % 2) && m->num_of_philos > 1)
 	{
 		philo->first_fork =  &forks[(philo->position)];
