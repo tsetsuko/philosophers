@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:10:21 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/16 14:04:15 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/10/03 14:21:26 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	single_philo_routine(t_monitor *m, t_philo *p)
 {
 	safe_mutex_functions(LOCK, p->first_fork);
 	state_message(F_FORK, p);
-	philo_sleep(p, m->die); 
+	philo_sleep(p, m->die);
 	death_checker_s(m, p, m->beginning);
 	safe_mutex_functions(UNLOCK, p->first_fork);
 }
@@ -64,21 +64,23 @@ void	state_message(t_state state, t_philo *p)
 void	*routine(void *data)
 {
 	int			i;
-	t_philo 	*p;
+	t_philo		*p;
 
 	i = 0;
 	p = (t_philo *)data;
 	safe_mutex_functions(LOCK, p->last_meal_lock);
-	p->last_meal_time = get_long(&p->monitor->beginning, &p->monitor->lock_long_var);
+	p->last_meal_time = get_long(&p->monitor->beginning,
+			&p->monitor->lock_long_var);
 	safe_mutex_functions(UNLOCK, p->last_meal_lock);
 	while (get_bool(&p->monitor->end_flag, &p->monitor->end_lock) == false)
 	{
 		philo_eat(p->monitor, p);
 		if (get_bool(&p->monitor->end_flag, &p->monitor->end_lock) == true)
-			break	;
-		philo_sleep(p, get_long(&p->monitor->sleep, &p->monitor->lock_long_var));
+			break ;
+		philo_sleep(p, get_long(&p->monitor->sleep,
+				&p->monitor->lock_long_var));
 		if (get_bool(p->end_flag, p->end_lock) == true)
-			break	;
+			break ;
 		philo_think(p);
 	}
 	return (NULL);

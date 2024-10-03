@@ -6,12 +6,12 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 22:14:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/16 14:33:29 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/10/02 16:19:28 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "philo.h"
+
 void	clean_up(t_monitor *m, t_philo *array)
 {
 	free(array);
@@ -22,7 +22,6 @@ void	clean_up(t_monitor *m, t_philo *array)
 	safe_mutex_functions(DESTROY, &m->write_lock);
 	free(m->forks);
 }
-
 
 int	multiple_philos_sim(long num_of_p, t_monitor *m, t_philo *p)
 {
@@ -75,15 +74,13 @@ int	init_philosophers(t_monitor *monitor, t_philo *philo)
 	return (1);
 }
 
-
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	t_monitor *monitor;
+	t_monitor	*monitor;
 
 	monitor = (t_monitor *)malloc(sizeof(t_monitor) * 1);
 	if (argc == 5 || argc == 6)
 	{
-		// 🧾 🧾 check if the arguments are all non-alpha
 		if (!check_args(argv, monitor, argc))
 			return (1);
 		if (!init_monitor(monitor, argv))
@@ -95,5 +92,4 @@ int main(int argc, char **argv)
 		clean_up(monitor, monitor->array_of_philos);
 	}
 	return (0);
-
 }

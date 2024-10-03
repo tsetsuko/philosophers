@@ -1,24 +1,14 @@
-// # include <pthread.h>
-// # include <stdio.h>
-// # include <unistd.h>
-// # include <sys/time.h>
-// # include <stdlib.h>
-// # include <limits.h>
-
-// int main()
-// {
-// 	struct timeval tv1, tv2;
-// 	long	sec;
-
-// 	gettimeofday(&tv1, NULL);
-// 	printf("Seconds since Jan 1, 1970: %ld\n", tv1.tv_sec);
-// 	usleep(4000000);
-// 	gettimeofday(&tv2, NULL);
-// 	sec = tv2.tv_sec - tv1.tv_sec;
-// 	printf("Seconds since Jan 1, 1970: %ld\n", tv2.tv_sec);
-// 	printf("%ld\n", sec);
-// 	return 0;
-// }
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   time.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/03 14:26:46 by zogorzeb          #+#    #+#             */
+/*   Updated: 2024/10/03 14:27:12 by zogorzeb         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../philo.h"
 
@@ -30,7 +20,7 @@ void	timestamp(long beginning, long *timestamp)
 	*timestamp = ms - beginning;
 }
 
-long	get_ms()
+long	get_ms(void)
 {
 	struct timeval	tv1;
 

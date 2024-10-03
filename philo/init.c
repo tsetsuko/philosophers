@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 17:55:00 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/16 13:51:41 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/10/02 16:18:16 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,13 @@ int	handle_mutex(int status, t_mutex_ft func)
 	else if (status == EINVAL && func == INIT)
 		return (error("the value specified by attr is invalid (mutex error)"));
 	else if (status == ENOMEM && func == INIT)
-		return (error("The process cannot allocate enough memory to create another mutex"));
+		return (error("The process cannot allocate enough memory"));
 	else if (status == EBUSY && func == DESTROY)
 		return (error("mutex is locked (couldn't destroy)"));
 	else if (status == EINVAL)
 		return (error("the value specified by mutex is invalid"));
 	else if (status == EDEADLK && func == LOCK)
-		return (error("A deadlock would occur if the thread blocked waiting for mutex"));
+		return (error("deadlock would occur"));
 	else if (status == EPERM && func == UNLOCK)
 		return (error("the current thrad does not hold a lock on mutex"));
 	return (error("mutex"));
@@ -45,7 +45,8 @@ void	safe_mutex_functions(t_mutex_ft func, pthread_mutex_t *mutex)
 		error("wrong mutex code\n");
 }
 
-void	philo_info_dump(t_monitor *m, t_philo *philo, int index, pthread_mutex_t *forks)
+void	philo_info_dump(t_monitor *m,
+	t_philo *philo, int index, pthread_mutex_t *forks)
 {
 	philo->last_meal_lock = &m->meal_lock;
 	philo->dead = false;
@@ -62,12 +63,12 @@ void	philo_info_dump(t_monitor *m, t_philo *philo, int index, pthread_mutex_t *f
 	philo->time_to_think = (m->die - m->time_of_eating - m->sleep) / 2;
 	if (!(philo->index % 2) && m->num_of_philos > 1)
 	{
-		philo->first_fork =  &forks[(philo->position)];
-		philo->second_fork =  &forks[(philo->position + 1) % m->num_of_philos];
+		philo->first_fork = &forks[(philo->position)];
+		philo->second_fork = &forks[(philo->position + 1) % m->num_of_philos];
 	}
 	else if ((philo->index % 2) && m->num_of_philos > 1)
 	{
-		philo->first_fork =  &forks[(philo->position + 1) % m->num_of_philos];
+		philo->first_fork = &forks[(philo->position + 1) % m->num_of_philos];
 		philo->second_fork = &forks[(philo->position)];
 	}
 	else

@@ -6,11 +6,18 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 14:18:29 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/09/16 14:35:00 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/10/03 14:26:13 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
+
+int	error(char *message)
+{
+	printf(RED"error - ");
+	printf(RST"%s\n", message);
+	return (0);
+}
 
 static int	num_input(char **argv)
 {
@@ -52,9 +59,11 @@ int	check_args(char **argv, t_monitor *m, int argc)
 	m->sleep = ft_atol(argv[4]);
 	if (argv[5])
 		m->meals = ft_atol(argv[5]);
-	if (m->num_of_philos <= 0 || m->time_of_eating <= 0 || m->die <= 0 || m->sleep <= 0)
+	if (m->num_of_philos <= 0 || m->time_of_eating <= 0
+		|| m->die <= 0 || m->sleep <= 0)
 		return (error("enter correct values (bigger than 0)"));
-	if (m->num_of_philos > INT_MAX || m->time_of_eating > INT_MAX || m->die > INT_MAX || m->sleep > INT_MAX)
+	if (m->num_of_philos > INT_MAX || m->time_of_eating > INT_MAX
+		|| m->die > INT_MAX || m->sleep > INT_MAX)
 		return (error("enter values smaller than INT_MAX only"));
 	return (1);
 }
