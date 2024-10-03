@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 22:14:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/10/02 16:19:28 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/10/03 14:47:36 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ int	multiple_philos_sim(long num_of_p, t_monitor *m, t_philo *p)
 	{
 		if (pthread_create(&(p[i].philo_thread), NULL, &routine, &p[i]) != 0)
 			error("thread not created");
+		set_long(&(p[i].last_meal_time), get_ms(), p[i].last_meal_lock);
 		i++;
 	}
 	if (num_of_p > 1)
