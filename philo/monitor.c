@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/02 16:19:46 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/10/03 14:14:16 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/10/17 16:17:40 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ bool	meal_counter(t_monitor *m, t_philo *p)
 		}
 		if (count_feds == num_of_philos)
 		{
-			printf("feds: %d\n", count_feds);
 			return (true);
 		}
 	}
