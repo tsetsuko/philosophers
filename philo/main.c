@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 22:14:47 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/10/03 14:47:36 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/10/20 20:06:02 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,14 @@
 
 void	clean_up(t_monitor *m, t_philo *array)
 {
+	int	i;
+
+	i = 0;
+	while (i < m->num_of_philos)
+	{
+		safe_mutex_functions(DESTROY, &m->forks[i]);
+		i++;
+	}
 	free(array);
 	safe_mutex_functions(DESTROY, &m->end_lock);
 	safe_mutex_functions(DESTROY, &m->lock_bools);
@@ -21,6 +29,7 @@ void	clean_up(t_monitor *m, t_philo *array)
 	safe_mutex_functions(DESTROY, &m->meal_lock);
 	safe_mutex_functions(DESTROY, &m->write_lock);
 	free(m->forks);
+	free(m);
 }
 
 int	multiple_philos_sim(long num_of_p, t_monitor *m, t_philo *p)

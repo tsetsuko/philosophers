@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 23:10:21 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/10/17 16:27:04 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/10/20 20:13:43 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,6 @@ void	*routine(void *data)
 
 	i = 0;
 	p = (t_philo *)data;
-	safe_mutex_functions(LOCK, p->last_meal_lock);
-	// p->last_meal_time = get_long(&p->monitor->beginning,
-	// 		&p->monitor->lock_long_var);
-	safe_mutex_functions(UNLOCK, p->last_meal_lock);
 	while (get_bool(&p->monitor->end_flag, &p->monitor->end_lock) == false)
 	{
 		philo_eat(p->monitor, p);

@@ -6,7 +6,7 @@
 /*   By: zogorzeb <zogorzeb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/02 16:19:46 by zogorzeb          #+#    #+#             */
-/*   Updated: 2024/10/17 16:17:40 by zogorzeb         ###   ########.fr       */
+/*   Updated: 2024/10/20 20:16:01 by zogorzeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,16 +39,15 @@ bool	meal_counter(t_monitor *m, t_philo *p)
 	return (false);
 }
 
-bool	check_philo_death(t_philo p, t_monitor *m)
+bool	check_philo_death(t_philo *p, t_monitor *m)
 {
 	long	time_to_die;
 
 	time_to_die = get_long(&m->die, &m->lock_long_var);
-	if (time_to_die <= get_ms() - get_long(&p.last_meal_time, p.last_meal_lock)
-		&& (get_bool(&p.eating, &m->lock_bools) == false))
+	if (time_to_die <= get_ms() - get_long(&p->last_meal_time, &m->meal_lock)
+		&& (get_bool(&p->eating, &m->lock_bools) == false))
 	{
-		set_bool(&p.dead, true, p.lock_bool);
-		state_message(DIE, &p);
+		state_message(DIE, p);
 		return (true);
 	}
 	else
@@ -64,7 +63,7 @@ bool	death_checker(t_philo *philos, t_monitor *m)
 	num_of_philos = get_long(&m->num_of_philos, &m->lock_long_var);
 	while (i < num_of_philos)
 	{
-		if (check_philo_death(philos[i], m) == true)
+		if (check_philo_death(&philos[i], m) == true)
 			return (true);
 		i++;
 	}
@@ -81,7 +80,7 @@ void	*monitor_routine(void *data)
 		usleep(100);
 		if (death_checker(m->array_of_philos, m))
 		{
-			set_bool(&m->end_flag, true, &m->lock_bools);
+			set_bool(&m->end_flag, true, &m->end_lock);
 			break ;
 		}
 		if (get_bool(&m->meal_counter, &m->lock_bools))
